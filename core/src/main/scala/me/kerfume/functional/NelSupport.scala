@@ -13,7 +13,7 @@ trait NelSupport {
         implicitly[Applicative[G]].pure(implicitly[MonoidK[F]].empty[B])
     }
   }
-  protected def tapWhenNel0[A, G[_]: Applicative](
+  protected def whenNel0_[A, G[_]: Applicative](
       xs: List[A]
   )(f: NonEmptyList[A] => G[Unit]): G[Unit] = {
     NonEmptyList.fromList(xs) match {
@@ -26,8 +26,8 @@ trait NelSupport {
     def whenNel[B, F[_]: MonoidK, G[_]: Applicative](
         f: NonEmptyList[A] => G[F[B]]
     ): G[F[B]] = whenNel0(xs)(f)
-    def tapWhenNel[G[_]: Applicative](f: NonEmptyList[A] => G[Unit]): G[Unit] =
-      tapWhenNel0(xs)(f)
+    def whenNel_[G[_]: Applicative](f: NonEmptyList[A] => G[Unit]): G[Unit] =
+      whenNel0_(xs)(f)
   }
 }
 object NelSupport extends NelSupport

@@ -26,7 +26,7 @@ class NelSupportSpec extends FreeSpecBase {
         assert(actual == Left("fail"))
       }
     }
-    "underlying has element" - {
+    "underlying is empty" - {
       val underlying = List.empty[Int]
 
       "return G wrapped Nil" in {
@@ -41,6 +41,42 @@ class NelSupportSpec extends FreeSpecBase {
           "fail".asLeft[List[Int]]
         }
         assert(actual == Right(Nil))
+      }
+    }
+  }
+  "whenNel_" - {
+    "underlying has element" - {
+      val underlying = List(1, 2, 3)
+
+      "return G context in equal to callback value with Right" in {
+        val actual = underlying.whenNel_ { _ =>
+          ().asRight[String]
+        }
+        assert(actual == Right(()))
+      }
+
+      "return G context in equal to callback value with Left" in {
+        val actual = underlying.whenNel_ { _ =>
+          "fail".asLeft[Unit]
+        }
+        assert(actual == Left("fail"))
+      }
+    }
+    "underlying is empty" - {
+      val underlying = List.empty[Int]
+
+      "return G sucees value with callback succee context" in {
+        val actual = underlying.whenNel_ { _ =>
+          ().asRight[String]
+        }
+        assert(actual == Right(()))
+      }
+
+      "return G succee value with callback fail context" in {
+        val actual = underlying.whenNel_ { _ =>
+          "fail".asLeft[Unit]
+        }
+        assert(actual == Right(()))
       }
     }
   }

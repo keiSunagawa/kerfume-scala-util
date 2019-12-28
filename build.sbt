@@ -43,7 +43,7 @@ productionBuild := {
     Project.extract(ns).runTask(clean in (pj, Test), ns)
     Project.extract(ns).runTask(scalafmtCheckAll in Test, ns)
     Project.extract(ns).runTask(scalafmtSbtCheck in Test, ns)
-    Project.extract(ns).runTask(compile in (pj, Compile), ns)
+    Project.extract(ns).runTask(compile in (pj, Test), ns)
     Project.extract(ns).runTask(test in (pj, Test), ns)
   }
 }
@@ -60,7 +60,7 @@ publishAll := {
       .extract(baseState)
       .appendWithSession(
         Seq(
-          scalaVersion := sv
+          scalaVersion in ThisBuild := sv
         ),
         baseState
       )
