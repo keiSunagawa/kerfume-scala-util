@@ -4,15 +4,13 @@ lazy val scala212 = "2.12.10"
 lazy val scala213 = "2.13.1"
 
 organization in ThisBuild := "me.kerfume"
-version in ThisBuild := "0.1.0-SNAPSHOT-1"
+version in ThisBuild := "0.1.0-SNAPSHOT"
 scalaVersion in ThisBuild := scala213
 
-lazy val publishAll = taskKey[Unit]("my test task")
+lazy val publishAll = taskKey[Unit]("compile and publish command with all supprt scala versions")
 lazy val supprtVersions = Seq(scala212, scala213)
 
 publishAll := {
-//  (Test / clean).value
-//  (Test / compile).value
   val baseState = state.value
 
   supprtVersions.foreach { sv =>
@@ -31,7 +29,8 @@ lazy val root = (project in file("."))
   .settings(
     crossScalaVersions := supprtVersions,
     name := "kerfume-scala-util",
-    publishTo := Some(Resolver.file("core", file("repo"))(Patterns(true, Resolver.mavenStyleBasePattern))),
+    publishMavenStyle := true,
+    publishTo := Some(Resolver.file("core", file("repo"))),
     libraryDependencies += scalaTest % Test
   )
 
@@ -61,4 +60,4 @@ lazy val root = (project in file("."))
 //   if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
 //   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
 // }
-// ThisBuild / publishMavenStyle := true
+
