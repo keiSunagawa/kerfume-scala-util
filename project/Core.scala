@@ -3,7 +3,7 @@ import Keys._
 import Dependencies._
 
 object Core {
-  lazy val define =  (project in file("core"))
+  lazy val define = (project in file("core"))
     .settings(Base.settings)
     .settings(
       name := "kerfume-scala-util-core",

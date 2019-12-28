@@ -1,36 +1,73 @@
 organization in ThisBuild := "me.kerfume"
 version in ThisBuild := "0.1.0-SNAPSHOT"
 scalaVersion in ThisBuild := Base.scala213
+scalafmtOnCompile in ThisBuild := true
 
-lazy val publishAll = taskKey[Unit]("compile and publish command with all supprt scala versions")
-lazy val supprtVersions = Seq(
+lazy val productionBuild =
+  taskKey[Unit]("format check and compile and test")
+
+lazy val publishAll =
+  taskKey[Unit]("compile and publish command with all supprt scala versions")
+
+lazy val supportVersions = Seq(
   Base.scala212,
   Base.scala213
 )
 
 lazy val core = Core.define
 
-publishAll := {
-  val baseState = state.value
-
-  val publishProjects = Seq(core)
-  for {
-    pj <- publishProjects
-    sv <- supprtVersions
-  } yield {
-    val ns = Project.extract(baseState).appendWithSession(
-      Seq(
-        scalaVersion := sv
-      ), baseState)
-    Project.extract(ns).runTask(clean in (pj, Test), ns)
-    Project.extract(ns).runTask(compile in (pj, Test), ns)
-    Project.extract(ns).runTask(test in (pj, Test), ns)
-    Project.extract(ns).runTask(publish in (pj, Compile), ns)
-  }
-}
+lazy val sourceProjects = Seq(core)
 
 lazy val root = (project in file("."))
   .aggregate(core)
+
+productionBuild := {
+
+  val baseState = state.value
+
+  for {
+    pj <- sourceProjects
+    sv <- supportVersions
+  } yield {
+    val ns = Project
+      .extract(baseState)
+      .appendWithSession(
+        Seq(
+          scalaVersion := sv,
+          scalacOptions in ThisBuild ++= Seq(
+            "-Xfatal-warnings"
+          )
+        ),
+        baseState
+      )
+    Project.extract(ns).runTask(clean in (pj, Test), ns)
+    Project.extract(ns).runTask(scalafmtCheckAll in Test, ns)
+    Project.extract(ns).runTask(scalafmtSbtCheck in Test, ns)
+    Project.extract(ns).runTask(compile in (pj, Compile), ns)
+    Project.extract(ns).runTask(test in (pj, Test), ns)
+  }
+}
+publishAll := {
+  val baseState = state.value
+
+  productionBuild.value
+
+  for {
+    pj <- sourceProjects
+    sv <- supportVersions
+  } yield {
+    val ns = Project
+      .extract(baseState)
+      .appendWithSession(
+        Seq(
+          scalaVersion := sv
+        ),
+        baseState
+      )
+
+    Project.extract(ns).runTask(publish in (pj, Compile), ns)
+  }
+}
 
 // Uncomment the following for publishing to Sonatype.
 // See https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html for more detail.
@@ -58,4 +95,3 @@ lazy val root = (project in file("."))
 //   if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
 //   else Some("releases" at nexus + "service/local/staging/deploy/maven2")
 // }
-

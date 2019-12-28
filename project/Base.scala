@@ -11,17 +11,35 @@ object Base {
 
   private val version212OnlyOptions = Seq(
     "-Ypartial-unification",
-    "-language:higherKinds",
+    "-language:higherKinds"
   )
-  def commonScalaOptions(currentVersion: String) = Seq(
-    "-deprecation",
-    "-encoding", "UTF-8",
-    "-feature",
-    //"-Xfatal-warnings",
-  ) ++ (if (currentVersion == Base.scala212) Base.version212OnlyOptions else Nil)
+  def commonScalaOptions(currentVersion: String) =
+    Seq(
+      "-deprecation",
+      "-encoding",
+      "utf-8",
+      "-feature",
+      "-Xlint",
+      "-unchecked",
+      "-Ywarn-dead-code",
+      "-Ywarn-numeric-widen",
+      "-Ywarn-value-discard",
+      "-Ywarn-unused",
+      "-Ywarn-unused:-implicits",
+      "-language:higherKinds",
+      "-Ypatmat-exhaust-depth",
+      "off"
+    ) ++ (if (currentVersion == Base.scala212) Base.version212OnlyOptions
+          else Nil)
 
   val settings = Seq(
     crossScalaVersions := supprtVersions,
-    publishMavenStyle := true,
+    publishMavenStyle := true
+  )
+
+  lazy val strictScalacOptions = Seq(
+    scalacOptions ++= Seq(
+      "-Xfatal-warnings"
+    )
   )
 }
