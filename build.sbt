@@ -1,38 +1,36 @@
-import Dependencies._
-
-lazy val scala212 = "2.12.10"
-lazy val scala213 = "2.13.1"
-
 organization in ThisBuild := "me.kerfume"
 version in ThisBuild := "0.1.0-SNAPSHOT"
-scalaVersion in ThisBuild := scala213
+scalaVersion in ThisBuild := Base.scala213
 
 lazy val publishAll = taskKey[Unit]("compile and publish command with all supprt scala versions")
-lazy val supprtVersions = Seq(scala212, scala213)
+lazy val supprtVersions = Seq(
+  Base.scala212,
+  Base.scala213
+)
+
+lazy val core = Core.define
 
 publishAll := {
   val baseState = state.value
 
-  supprtVersions.foreach { sv =>
+  val publishProjects = Seq(core)
+  for {
+    pj <- publishProjects
+    sv <- supprtVersions
+  } yield {
     val ns = Project.extract(baseState).appendWithSession(
-    Seq(
-      scalaVersion := sv
-    ), baseState)
-    Project.extract(ns).runTask(clean in Test, ns)
-    Project.extract(ns).runTask(compile in Test, ns)
-    Project.extract(ns).runTask(test in Test, ns)
-    Project.extract(ns).runTask(publish in Compile, ns)
+      Seq(
+        scalaVersion := sv
+      ), baseState)
+    Project.extract(ns).runTask(clean in (pj, Test), ns)
+    Project.extract(ns).runTask(compile in (pj, Test), ns)
+    Project.extract(ns).runTask(test in (pj, Test), ns)
+    Project.extract(ns).runTask(publish in (pj, Compile), ns)
   }
 }
 
 lazy val root = (project in file("."))
-  .settings(
-    crossScalaVersions := supprtVersions,
-    name := "kerfume-scala-util",
-    publishMavenStyle := true,
-    publishTo := Some(Resolver.file("core", file("repo"))),
-    libraryDependencies += scalaTest % Test
-  )
+  .aggregate(core)
 
 // Uncomment the following for publishing to Sonatype.
 // See https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html for more detail.
