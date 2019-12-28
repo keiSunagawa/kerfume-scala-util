@@ -3,17 +3,36 @@ import Dependencies._
 lazy val scala212 = "2.12.10"
 lazy val scala213 = "2.13.1"
 
-ThisBuild / organization := "me.kerfume"
-ThisBuild / organizationName := "example"
-ThisBuild / version := "0.1.0-SNAPSHOT"
-ThisBuild / scalaVersion := scala213
+organization in ThisBuild := "me.kerfume"
+version in ThisBuild := "0.1.0-SNAPSHOT-1"
+scalaVersion in ThisBuild := scala213
+
+lazy val publishAll = taskKey[Unit]("my test task")
+lazy val supprtVersions = Seq(scala212, scala213)
+
+publishAll := {
+//  (Test / clean).value
+//  (Test / compile).value
+  val baseState = state.value
+
+  supprtVersions.foreach { sv =>
+    val ns = Project.extract(baseState).appendWithSession(
+    Seq(
+      scalaVersion := sv
+    ), baseState)
+    Project.extract(ns).runTask(clean in Test, ns)
+    Project.extract(ns).runTask(compile in Test, ns)
+    Project.extract(ns).runTask(test in Test, ns)
+    Project.extract(ns).runTask(publish in Compile, ns)
+  }
+}
 
 lazy val root = (project in file("."))
   .settings(
-    crossScalaVersions := Seq(scala212, scala213),
+    crossScalaVersions := supprtVersions,
     name := "kerfume-scala-util",
-    publishTo := Some(Resolver.file("core", file("repo"))(Patterns(true, Resolver.mavenStyleBasePattern)))
-    //libraryDependencies += scalaTest % Test
+    publishTo := Some(Resolver.file("core", file("repo"))(Patterns(true, Resolver.mavenStyleBasePattern))),
+    libraryDependencies += scalaTest % Test
   )
 
 // Uncomment the following for publishing to Sonatype.
