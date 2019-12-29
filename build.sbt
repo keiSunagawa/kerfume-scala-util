@@ -14,12 +14,13 @@ lazy val supportVersions = Seq(
   Base.scala213
 )
 
-lazy val core = Core.define
+lazy val core = Core.core
+lazy val nightly = Nightly.nightly.dependsOn(core % "test->test;compile->compile")
 
-lazy val sourceProjects = Seq(core)
+lazy val sourceProjects = Seq(core, nightly)
 
 lazy val root = (project in file("."))
-  .aggregate(core)
+  .aggregate(core, nightly)
 
 productionBuild := {
 
