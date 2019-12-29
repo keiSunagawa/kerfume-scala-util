@@ -15,7 +15,8 @@ lazy val supportVersions = Seq(
 )
 
 lazy val core = Core.core
-lazy val nightly = Nightly.nightly.dependsOn(core % "test->test;compile->compile")
+lazy val nightly =
+  Nightly.nightly.dependsOn(core % "test->test;compile->compile")
 
 lazy val sourceProjects = Seq(core, nightly)
 
@@ -34,7 +35,7 @@ productionBuild := {
       .extract(baseState)
       .appendWithSession(
         Seq(
-          scalaVersion := sv,
+          scalaVersion in ThisBuild := sv,
           scalacOptions in ThisBuild ++= Seq(
             "-Xfatal-warnings"
           )
