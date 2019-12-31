@@ -1,5 +1,5 @@
 organization in ThisBuild := "me.kerfume"
-version in ThisBuild := "0.1.0-SNAPSHOT"
+version in ThisBuild := "0.1.0"
 scalaVersion in ThisBuild := Base.scala213
 scalafmtOnCompile in ThisBuild := true
 
