@@ -28,7 +28,8 @@ object Base {
       "-Ywarn-unused:-implicits",
       "-language:higherKinds",
       "-Ypatmat-exhaust-depth",
-      "off"
+      "off",
+      "-Ymacro-annotations"
     ) ++ (if (currentVersion == Base.scala212) Base.version212OnlyOptions
           else Nil)
 
