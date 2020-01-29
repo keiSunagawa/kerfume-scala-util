@@ -7,7 +7,6 @@ object Nightly {
     .settings(Base.settings)
     .settings(
       name := "kerfume-scala-util-nightly",
-      publishTo := Some(Resolver.file("nightly", file("repo"))),
       scalacOptions ++= Base.commonScalaOptions(scalaVersion.value) ++ Seq(
         "-Ywarn-unused:-patvars" // for BiPath quasiquoat unapply matching
       ),

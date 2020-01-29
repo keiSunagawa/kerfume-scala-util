@@ -7,7 +7,6 @@ object Core {
     .settings(Base.settings)
     .settings(
       name := "kerfume-scala-util-core",
-      publishTo := Some(Resolver.file("core", file("repo"))),
       scalacOptions ++= Base.commonScalaOptions(scalaVersion.value),
       libraryDependencies ++= Base.commonLibs
     )
