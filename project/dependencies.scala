@@ -5,6 +5,6 @@ object Versions {
   lazy val cats = "2.1.0"
 }
 object Dependencies {
-  lazy val testDep = Seq("org.scalatest" %% "scalatest" % Versions.scalaTest)
+  lazy val testDep = Seq("org.scalatest" %% "scalatest" % Versions.scalaTest % Test)
   lazy val cats = Seq("org.typelevel" %% "cats-core" % Versions.cats)
 }
